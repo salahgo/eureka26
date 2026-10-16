@@ -33,7 +33,7 @@ for (const width of [360, 390, 430]) {
 test.describe('questionnaire behaviour', () => {
   test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
-  test('wrong answers are corrected and every question shows a management insight', async ({ page }) => {
+  test('wrong answers are corrected with the right letter and the real figure, without extra text', async ({ page }) => {
     await page.goto(BASE);
     await page.getByTestId('start').click();
     const qid = (await page.getByTestId('question-title').getAttribute('data-question-id'))!;
@@ -41,11 +41,10 @@ test.describe('questionnaire behaviour', () => {
     await page.getByTestId(`choice-${'ABCD'[wrong]}`).click();
     await expect(page.getByTestId('validate')).toBeEnabled();
     await page.getByTestId('validate').click();
-    await expect(page.getByTestId('feedback')).toContainText('Pas tout à fait');
-    await expect(page.getByTestId('feedback')).toContainText('Pour le manager');
+    await expect(page.getByTestId('feedback')).toContainText(`Réponse\u202f: ${'ABCD'[correctOf(qid)]}`);
+    await expect(page.getByTestId('feedback')).toContainText(/35\s?000/);
+    await expect(page.getByTestId('feedback')).not.toContainText('manager');
     await expect(page.getByTestId(`choice-${'ABCD'[correctOf(qid)]}`)).toHaveAttribute('aria-checked', 'false');
-    await page.getByRole('button', { name: 'En savoir plus' }).click();
-    await expect(page.getByTestId('feedback')).toContainText('Source');
   });
 
   test('progress persists after reload', async ({ page }) => {
@@ -69,7 +68,7 @@ test.describe('questionnaire behaviour', () => {
     const qid = (await page.getByTestId('question-title').getAttribute('data-question-id'))!;
     await page.getByTestId(`choice-${'ABCD'[correctOf(qid)]}`).click();
     await page.getByTestId('validate').click();
-    await page.getByRole('button', { name: /terminer maintenant/ }).click();
+    await page.getByTestId('stop').click();
     await page.getByTestId('stop-confirm').click();
     const decoded = decodeResponse(await page.getByTestId('response-code').inputValue());
     expect(decoded.complete).toBe(false);
@@ -78,7 +77,7 @@ test.describe('questionnaire behaviour', () => {
 
   test('a custom subset from the invitation URL (?s=) and no-feedback mode (?f=0)', async ({ page }) => {
     await page.goto(`${BASE}?s=1AC&f=0`);
-    await expect(page.getByText('3', { exact: true }).first()).toBeVisible();
+    await expect(page.getByTestId('quiz-meta')).toContainText('3 questions');
     await page.getByTestId('start').click();
     await answerAll(page, () => 0, { feedback: false });
     await expect(page.getByTestId('score')).toBeVisible();
@@ -102,7 +101,7 @@ test.describe('questionnaire behaviour', () => {
     await page.getByTestId('start').click();
     await answerAll(page, correctOf);
     const first = await page.getByTestId('response-code').inputValue();
-    await page.getByRole('button', { name: 'Recommencer le questionnaire' }).click();
+    await page.getByTestId('restart').click();
     await page.getByTestId('restart-confirm').click();
     await expect(page.getByTestId('start')).toHaveText(/Je relève le défi/);
     await page.getByTestId('start').click();

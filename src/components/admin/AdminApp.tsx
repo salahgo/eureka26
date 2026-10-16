@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDown,
   ArrowUp,
-  BookOpen,
   Camera,
   ClipboardPaste,
   Database,
@@ -20,7 +19,7 @@ import {
   Upload,
   Users,
 } from 'lucide-react';
-import { CATEGORIES, DEFAULT_SEQUENCE, FULL_SEQUENCE, LETTERS, QUESTION_BY_ID } from '../../data/questions';
+import { DEFAULT_SEQUENCE, FULL_SEQUENCE, LETTERS, QUESTION_BY_ID } from '../../data/questions';
 import { activeSequence, defaultConfig, defaultPresentation } from '../../lib/config';
 import { parseBatchHeader, extractCodes } from '../../lib/codec';
 import { aggregatedCSV, aggregatedJSON, submissionsCSV } from '../../lib/exporters';
@@ -125,11 +124,10 @@ function PinGate({ hash, onUnlock }: { hash: string; onUnlock: () => void }) {
         }}
       >
         <h1 className="flex items-center gap-2 font-display text-xl font-bold">
-          <Lock size={20} /> Interface animateur verrouillée
+          <Lock size={20} /> Code PIN
         </h1>
-        <p className="mt-2 text-sm text-ink-2">Code PIN local (protection de confort contre une manipulation accidentelle — ce n’est pas une sécurité serveur).</p>
         <input className="field mt-4" type="password" inputMode="numeric" autoComplete="off" value={pin} onChange={(e) => setPin(e.target.value)} aria-label="Code PIN" autoFocus />
-        {err && <p className="mt-2 text-sm text-rose-300">Code incorrect.</p>}
+        {err && <p className="mt-2 text-sm text-rose-300">Incorrect.</p>}
         <button className="btn btn-primary mt-4 w-full" type="submit">
           Déverrouiller
         </button>
@@ -194,7 +192,7 @@ function AdminMain() {
     <div className="mx-auto max-w-[1400px] px-4 pb-16 pt-4 md:px-6">
       <header className="flex flex-wrap items-center gap-4">
         <Brand size="md" />
-        <span className="chip !border-amber-400/40 !text-amber-200">Interface animateur — locale à ce navigateur</span>
+        <span className="chip !border-amber-400/40 !text-amber-200">Animateur · local</span>
         <nav className="ml-auto flex flex-wrap gap-2">
           <a className="btn btn-ghost" href={route('qr')} target="eureka26-qr" data-testid="open-qr">
             <QrIcon size={18} /> Écran QR <ExternalLink size={14} />
@@ -206,18 +204,16 @@ function AdminMain() {
       </header>
 
       <section className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-5" aria-label="Compteurs">
-        <Counter label="Réponses acceptées" value={session.submissions.length} accent testId="count-accepted" />
-        <Counter label="Questionnaires complets" value={complete} />
-        <Counter label="Doublons ignorés" value={session.duplicates} testId="count-duplicates" />
-        <Counter label="Conflits d’identifiant" value={session.conflicts} />
+        <Counter label="Acceptées" value={session.submissions.length} accent testId="count-accepted" />
+        <Counter label="Complètes" value={complete} />
+        <Counter label="Doublons" value={session.duplicates} testId="count-duplicates" />
+        <Counter label="Conflits" value={session.conflicts} />
         <Counter label="Votes manuels" value={manualTotal} />
       </section>
 
-      <p className="mt-3 flex items-start gap-2 text-sm text-ink-3">
-        <Info size={16} className="mt-0.5 shrink-0" aria-hidden="true" />
-        {fr(
-          `Les données sont enregistrées uniquement dans ce navigateur (localStorage). /admin, /results et /qr ouverts dans ce même navigateur se synchronisent ${syncAvailable() ? '(BroadcastChannel actif)' : '(via les événements de stockage)'} ; cette synchronisation ne s'étend PAS aux téléphones des participants, qui transmettent leurs réponses par QR code.`,
-        )}
+      <p className="mt-3 flex items-center gap-2 text-sm text-ink-3">
+        <Info size={16} className="shrink-0" aria-hidden="true" />
+        {syncAvailable() ? 'Synchronisé avec /results et /qr dans ce navigateur uniquement.' : 'Synchronisation : ce navigateur uniquement.'}
       </p>
 
       <div className="mt-5 grid gap-6 lg:grid-cols-[230px_1fr]">
@@ -343,12 +339,12 @@ function CollectPanel({
   const recent = session.log.slice(0, 8);
   return (
     <div className="grid gap-5 xl:grid-cols-[1.25fr_1fr]">
-      <Panel title="Scanner les QR codes de réponse" icon={Camera} desc="Chaque participant présente l’écran de son téléphone devant la caméra. Un signal vert confirme l’ajout ; un même code scanné deux fois est ignoré.">
+      <Panel title="Scanner" icon={Camera}>
         <Scanner onText={onScan} />
         <div className="mt-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-ink-3">Activité récente</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-ink-3">Journal</h3>
           <ul className="mt-2 space-y-1 text-sm" data-testid="recent-log">
-            {recent.length === 0 && <li className="text-ink-3">Aucune activité pour l’instant.</li>}
+            {recent.length === 0 && <li className="text-ink-3">—</li>}
             {recent.map((l, i) => (
               <li key={i} className={l.kind === 'accepted' ? 'text-emerald-300' : l.kind === 'invalid' ? 'text-rose-300' : l.kind === 'info' ? 'text-ink-2' : 'text-amber-300'}>
                 <span className="text-ink-3 tabular-nums">{formatTime(l.at)}</span> — {l.message}
@@ -359,7 +355,7 @@ function CollectPanel({
       </Panel>
 
       <div className="space-y-5">
-        <Panel title="Coller des codes" icon={ClipboardPaste} desc="Collez un ou plusieurs codes (E26-…), séparés par des espaces ou des retours à la ligne — par exemple reçus par messagerie.">
+        <Panel title="Coller des codes" icon={ClipboardPaste}>
           <textarea className="field min-h-[140px] font-mono !text-sm" value={text} onChange={(e) => setText(e.target.value)} placeholder="E26-1C-XXXXXXXX-…" aria-label="Codes de réponse à importer" data-testid="paste-input" />
           <button
             type="button"
@@ -377,7 +373,7 @@ function CollectPanel({
           <ResultList results={pasteResults} />
         </Panel>
 
-        <Panel title="Importer des fichiers" icon={Upload} desc="Fichiers JSON exportés par les participants, fichiers de session EUREKA26 (fusionnés), ou fichiers texte contenant des codes.">
+        <Panel title="Fichiers" icon={Upload}>
           <label className="btn btn-ghost cursor-pointer">
             <FileJson size={18} /> Choisir des fichiers…
             <input type="file" accept=".json,.txt,.csv,application/json,text/plain" multiple className="sr-only" onChange={(e) => onFiles(e.target.files).finally(() => (e.target.value = ''))} data-testid="file-input" />
@@ -396,7 +392,7 @@ function SubmissionsPanel({ session, apply }: { session: SessionData; apply: App
   const logIssues = session.log.filter((l) => l.kind === 'duplicate' || l.kind === 'conflict' || l.kind === 'invalid').slice(0, 30);
   return (
     <div className="space-y-5">
-      <Panel title={`Réponses reçues (${session.submissions.length})`} icon={Users} desc="Chaque ligne est une soumission anonyme identifiée par un code aléatoire. Les identifiants répétés sont détectés automatiquement.">
+      <Panel title={`Réponses : ${session.submissions.length}`} icon={Users}>
         <input className="field mb-3 !w-64" placeholder="Filtrer par identifiant…" value={filter} onChange={(e) => setFilter(e.target.value)} aria-label="Filtrer par identifiant" />
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-left text-sm" data-testid="submissions-table">
@@ -414,7 +410,7 @@ function SubmissionsPanel({ session, apply }: { session: SessionData; apply: App
               {rows.length === 0 && (
                 <tr>
                   <td colSpan={6} className="py-6 text-center text-ink-3">
-                    Aucune réponse collectée.
+                    —
                   </td>
                 </tr>
               )}
@@ -446,9 +442,9 @@ function SubmissionsPanel({ session, apply }: { session: SessionData; apply: App
           </table>
         </div>
       </Panel>
-      <Panel title="Doublons, conflits et codes rejetés" icon={RefreshCw} desc={`${session.duplicates} doublon(s) ignoré(s) · ${session.conflicts} conflit(s) d'identifiant. Un conflit signale un même identifiant avec des réponses différentes : la première version est conservée (sauf si une version complète remplace une version partielle).`}>
+      <Panel title={`Doublons : ${session.duplicates} · conflits : ${session.conflicts}`} icon={RefreshCw}>
         <ul className="space-y-1 text-sm" data-testid="issues-log">
-          {logIssues.length === 0 && <li className="text-ink-3">Rien à signaler.</li>}
+          {logIssues.length === 0 && <li className="text-ink-3">—</li>}
           {logIssues.map((l, i) => (
             <li key={i} className={l.kind === 'invalid' ? 'text-rose-300' : 'text-amber-300'}>
               <span className="tabular-nums text-ink-3">{formatTime(l.at)}</span> — {l.message}
@@ -473,7 +469,6 @@ function ManualPanel({ session, apply, sequence }: { session: SessionData; apply
     <Panel
       title="Votes collectés manuellement"
       icon={Hand}
-      desc="Pour un vote à main levée ou un comptage oral : saisissez le nombre de voix observées par réponse. Ces votes sont affichés séparément (« votes collectés manuellement ») et ne sont jamais présentés comme des réponses individuelles."
     >
       <label className="text-sm font-semibold text-ink-2" htmlFor="manual-q">
         Question
@@ -536,9 +531,8 @@ function QuestionsPanel({ config, setConfig }: { config: ReturnType<typeof defau
   return (
     <div className="space-y-5">
       <Panel
-        title={`Sélection et ordre des questions (${sequence.length} actives)`}
+        title={`Questions actives : ${sequence.length}`}
         icon={ListChecks}
-        desc="La sélection pilote le tableau de bord et l'URL du QR code d'invitation : les téléphones reçoivent cette liste via le paramètre ?s= de l'URL. Fixez la sélection AVANT de projeter le QR code."
       >
         <div className="mb-3 flex flex-wrap gap-2">
           <button type="button" className="btn btn-ghost" onClick={() => setConfig((p) => ({ ...p, order: [...FULL_SEQUENCE], enabled: [...DEFAULT_SEQUENCE] }))} data-testid="preset-default">
@@ -551,7 +545,7 @@ function QuestionsPanel({ config, setConfig }: { config: ReturnType<typeof defau
             Tout désactiver
           </button>
         </div>
-        {sequence.length === 0 && <p className="mb-3 rounded-xl border border-amber-400/40 bg-amber-400/10 p-3 text-sm text-amber-200">Aucune question active : les participants recevront la sélection par défaut.</p>}
+        {sequence.length === 0 && <p className="mb-3 rounded-xl border border-amber-400/40 bg-amber-400/10 p-3 text-sm text-amber-200">Aucune question active.</p>}
         <ol className="space-y-1.5" data-testid="question-config">
           {config.order.map((id, i) => {
             const q = QUESTION_BY_ID[id];
@@ -577,17 +571,16 @@ function QuestionsPanel({ config, setConfig }: { config: ReturnType<typeof defau
             );
           })}
         </ol>
-        <p className="mt-3 text-xs text-ink-3">Catégories : {Object.values(CATEGORIES).map((c) => c.label).join(' · ')}</p>
       </Panel>
 
-      <Panel title="Invitation et téléphones" icon={QrIcon}>
+      <Panel title="Invitation" icon={QrIcon}>
         <label className="flex items-center gap-3">
           <input type="checkbox" className="h-5 w-5 accent-cyan-400" checked={config.phoneFeedback} onChange={(e) => setConfig((p) => ({ ...p, phoneFeedback: e.target.checked }))} data-testid="phone-feedback" />
-          <span>Afficher la correction sur les téléphones après chaque question (sinon : uniquement à la fin)</span>
+          <span>Correction après chaque question sur les téléphones</span>
         </label>
         <div className="mt-4">
           <label className="text-sm font-semibold text-ink-2" htmlFor="invite-url">
-            URL publique du questionnaire (laisser vide pour {PUBLIC_URL})
+            URL publique
           </label>
           <div className="mt-1 flex gap-2">
             <input id="invite-url" className="field" value={urlDraft} placeholder={PUBLIC_URL} onChange={(e) => setUrlDraft(e.target.value)} />
@@ -603,10 +596,10 @@ function QuestionsPanel({ config, setConfig }: { config: ReturnType<typeof defau
         <p className="mt-3 break-all rounded-xl border border-edge bg-void/50 p-3 font-mono text-sm" data-testid="invite-preview">
           {url}
         </p>
-        {isLocalhost(url) && <p className="mt-2 text-sm text-amber-300">Attention : URL locale, inaccessible aux téléphones du public.</p>}
+        {isLocalhost(url) && <p className="mt-2 text-sm text-amber-300">URL locale.</p>}
         <div className="mt-4">
           <label className="text-sm font-semibold text-ink-2" htmlFor="autoplay">
-            Diaporama automatique : secondes par étape
+            Diaporama (secondes)
           </label>
           <input
             id="autoplay"
@@ -661,7 +654,7 @@ function BackupPanel({
 
   return (
     <div className="space-y-5">
-      <Panel title="Exporter les résultats" icon={FileSpreadsheet} desc="Exports générés localement dans le navigateur — rien n’est envoyé sur Internet.">
+      <Panel title="Exports" icon={FileSpreadsheet}>
         <div className="flex flex-wrap gap-2">
           <button type="button" className="btn btn-ghost" onClick={() => downloadFile(`eureka26-resultats-agreges-${stamp}.csv`, aggregatedCSV(session, sequence), 'text/csv;charset=utf-8')} data-testid="export-aggregate-csv">
             <FileSpreadsheet size={18} /> Résultats agrégés (CSV)
@@ -675,7 +668,7 @@ function BackupPanel({
         </div>
       </Panel>
 
-      <Panel title="Sauvegarder / restaurer la session" icon={Database} desc="La sauvegarde contient toutes les réponses anonymes, les votes manuels et le journal. Pratique pour changer d’ordinateur ou garder une archive.">
+      <Panel title="Session" icon={Database}>
         <div className="flex flex-wrap items-center gap-2">
           <button type="button" className="btn btn-primary" onClick={() => downloadFile(`eureka26-session-${stamp}.json`, JSON.stringify(session, null, 2), 'application/json')} data-testid="export-session">
             <Database size={18} /> Exporter la session complète (JSON)
@@ -701,7 +694,7 @@ function BackupPanel({
         )}
       </Panel>
 
-      <Panel title="Réinitialiser les résultats locaux" icon={Trash2} desc="Efface toutes les réponses collectées, les votes manuels et le journal de ce navigateur. Exportez d’abord une sauvegarde !">
+      <Panel title="Réinitialiser" icon={Trash2}>
         <div className="flex flex-wrap items-center gap-2">
           <input className="field !w-56" value={confirmText} onChange={(e) => setConfirmText(e.target.value)} placeholder="Tapez EFFACER" aria-label="Confirmation de réinitialisation" data-testid="reset-confirm" />
           <button
@@ -721,7 +714,7 @@ function BackupPanel({
         </div>
       </Panel>
 
-      <Panel title="Code PIN local (optionnel)" icon={Lock} desc="Évite une manipulation accidentelle de cette page sur l’ordinateur de présentation. Ce n’est PAS une authentification : un site statique ne peut pas protéger des données côté serveur, et tout reste lisible dans ce navigateur.">
+      <Panel title="Code PIN local (confort, pas une sécurité)" icon={Lock}>
         {hasPin ? (
           <button
             type="button"
@@ -757,9 +750,6 @@ function BackupPanel({
         )}
       </Panel>
 
-      <p className="flex items-center gap-2 text-sm text-ink-3">
-        <BookOpen size={16} /> Méthodologie et sources : <a className="underline" href={route('sources')}>page Sources</a>
-      </p>
       {transfer && <BatchTransfer codes={session.submissions.map((s) => s.code)} onClose={() => setTransfer(false)} />}
     </div>
   );

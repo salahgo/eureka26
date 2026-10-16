@@ -44,18 +44,18 @@ function beep(ok: boolean) {
 
 function cameraError(e: unknown): string {
   const name = (e as { name?: string })?.name;
-  if (!window.isSecureContext) return 'La caméra nécessite une connexion HTTPS (ou localhost). Utilisez l’import d’image ou le collage de codes.';
+  if (!window.isSecureContext) return 'Caméra : HTTPS requis.';
   switch (name) {
     case 'NotAllowedError':
     case 'SecurityError':
-      return 'Accès à la caméra refusé. Autorisez la caméra dans les réglages du navigateur (icône à gauche de l’adresse), puis réessayez — ou utilisez l’import d’image / le collage de codes.';
+      return 'Caméra refusée : autorisez-la dans le navigateur.';
     case 'NotFoundError':
     case 'OverconstrainedError':
-      return 'Aucune caméra détectée sur cet appareil. Branchez une webcam ou utilisez l’import d’image / le collage de codes.';
+      return 'Aucune caméra détectée.';
     case 'NotReadableError':
-      return 'La caméra est déjà utilisée par une autre application (visioconférence ?). Fermez-la puis réessayez.';
+      return 'Caméra déjà utilisée par une autre application.';
     default:
-      return 'Impossible de démarrer la caméra. Utilisez l’import d’image ou le collage de codes.';
+      return 'Impossible de démarrer la caméra.';
   }
 }
 
@@ -188,7 +188,7 @@ export default function Scanner({ onText }: Props) {
         {state !== 'running' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
             <Camera size={40} className="text-cyan-300" aria-hidden="true" />
-            <p className="max-w-md text-ink-2">{state === 'starting' ? 'Démarrage de la caméra…' : 'Scannez les QR codes de réponse des participants avec la caméra de cet ordinateur.'}</p>
+            {state === 'starting' && <p className="text-ink-2">…</p>}
             {state !== 'starting' && (
               <button type="button" className="btn btn-primary" onClick={() => start(deviceId || undefined)} data-testid="camera-start">
                 <Camera size={18} /> Activer la caméra
@@ -212,8 +212,8 @@ export default function Scanner({ onText }: Props) {
 
       <div className="flex flex-wrap items-center gap-2">
         {state === 'running' && (
-          <button type="button" className="btn btn-ghost" onClick={stop}>
-            <CameraOff size={18} /> Arrêter
+          <button type="button" className="btn btn-ghost" onClick={stop} aria-label="Arrêter la caméra">
+            <CameraOff size={18} />
           </button>
         )}
         {devices.length > 1 && (
@@ -234,13 +234,12 @@ export default function Scanner({ onText }: Props) {
           </select>
         )}
         <label className="btn btn-ghost cursor-pointer">
-          <ImageUp size={18} /> Lire une photo de QR
+          <ImageUp size={18} /> Photo
           <input type="file" accept="image/*" multiple className="sr-only" onChange={(e) => onImage(e.target.files).finally(() => (e.target.value = ''))} data-testid="image-input" />
         </label>
         <button type="button" className="btn btn-ghost" onClick={() => setSound(!sound)} aria-pressed={sound} aria-label={sound ? 'Couper le son' : 'Activer le son'}>
           {sound ? <Volume2 size={18} /> : <VolumeX size={18} />}
         </button>
-        {engine && <span className="text-xs text-ink-3">Décodage : {engine === 'native' ? 'natif (BarcodeDetector)' : 'jsQR (intégré)'}</span>}
       </div>
       {imageMsg && <p className="text-sm text-ink-2">{imageMsg}</p>}
     </div>

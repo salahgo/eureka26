@@ -69,6 +69,8 @@ export interface Question {
   managementTopics?: ManagementTopic[];
   /** Methodological caveat shown with the answer (estimates, vendor-reported figures…). */
   caveat?: string;
+  /** One- or two-word label of that caveat, displayed on the dashboard. */
+  tag?: string;
   /** Distinguishes a current fact from a forward-looking projection. */
   horizon?: { now: string; projection: string };
   /** 1–5: how counter-intuitive the fact is (used to pick the "most surprising fact"). */

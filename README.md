@@ -2,6 +2,8 @@
 
 An interactive, mobile-first audience experience for the **EUREKA26** roundtable on cybersecurity in Tunisia and worldwide, AI-driven attacks, cyber governance and the future of management. Participants answer a fast quiz on their phone; the presenter projects a QR invitation and a TV-grade results dashboard that reveals the real, sourced figures.
 
+The interface is deliberately **minimal in text**: no guide paragraphs, no explanations or management insights on phones (only right/wrong and the real figure), and on the projected dashboard only the figure, the correct answer and a short source line. Explanations, caveats, glossary terms and the management insight of each question stay available to the presenter behind the `E` key.
+
 **Everything runs on GitHub Pages**: a 100 % static site (Astro + React + Tailwind), no backend, no database, no external CDN, no analytics, no third-party API. All audience-facing text is in French.
 
 | Page | URL (after deployment) | Purpose |
@@ -70,7 +72,7 @@ The `/admin` page is a **local presenter interface, not an authenticated area**.
 |---|---|
 | `←` / `→` | previous / next question, fact or section |
 | `Espace` / `Entrée` | reveal / hide the answer |
-| `E` | explanation |
+| `E` | explanation, caveats and management insight (hidden by default) |
 | `R` | dramatic full-screen **REVEAL** (countdown + animated figure) / fact spotlight |
 | `1`…`5` | overview · questions · shocking facts · management · future |
 | `O` | back to overview |

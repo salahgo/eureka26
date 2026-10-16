@@ -113,7 +113,7 @@ export async function answerAll(page: Page, pick: (qid: string) => ChoiceIndex, 
     await page.getByTestId('validate').click();
     if (feedback) {
       await expect(page.getByTestId('feedback')).toBeVisible();
-      await expect(page.getByTestId('feedback')).toContainText(choice === QUESTION_BY_ID[qid].correct ? 'Bonne réponse' : 'Pas tout à fait');
+      await expect(page.getByTestId('feedback')).toContainText(choice === QUESTION_BY_ID[qid].correct ? 'Bonne réponse' : `Réponse : ${LETTERS[QUESTION_BY_ID[qid].correct]}`.replace(' :', '\u202f:'));
       if (opts.checkOverflow) await expectNoHorizontalScroll(page);
       await page.getByTestId('next').click();
     } else if (opts.checkOverflow) {

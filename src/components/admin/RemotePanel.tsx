@@ -28,14 +28,11 @@ export default function RemotePanel({ presentation: p, setPresentation, sequence
   return (
     <section className="glass rounded-3xl p-5" data-testid="remote">
       <h2 className="flex items-center gap-2 font-display text-xl font-bold">
-        <MonitorPlay size={20} className="text-cyan-300" aria-hidden="true" /> Télécommande de l’écran résultats
+        <MonitorPlay size={20} className="text-cyan-300" aria-hidden="true" /> Télécommande
       </h2>
-      <p className="mt-1 text-sm text-ink-2">
-        {fr("Ouvrez /results dans une autre fenêtre de CE navigateur (sur le projecteur) : chaque commande ci-dessous s'y applique instantanément via BroadcastChannel. Les téléphones des participants ne sont pas concernés.")}
-      </p>
 
       <div className="mt-4 rounded-2xl border border-cyan-400/30 bg-cyan-400/[0.06] p-4" aria-live="polite" data-testid="remote-status">
-        <div className="text-xs font-semibold uppercase tracking-wider text-cyan-300">État de l’écran</div>
+        <div className="text-xs font-semibold uppercase tracking-wider text-cyan-300">/results</div>
         <div className="mt-1 font-display text-lg font-bold">
           {viewLabel}
           {p.view === 'question' && q && ` · ${pos + 1}/${sequence.length} · ${p.revealed ? 'réponse révélée' : 'réponse masquée'}${p.explanation ? ' · explication' : ''}`}

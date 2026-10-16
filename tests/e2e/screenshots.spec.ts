@@ -69,7 +69,6 @@ test.describe('projection 1920×1080', () => {
     await page.waitForTimeout(500);
     await shot(page, 'projection-4-question-masquee-demo');
     await page.keyboard.press('Space');
-    await page.keyboard.press('e');
     await page.waitForTimeout(2400);
     await shot(page, 'projection-5-question-revelee-demo');
     await page.keyboard.press('ArrowLeft');

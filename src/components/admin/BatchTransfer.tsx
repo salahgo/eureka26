@@ -32,22 +32,19 @@ export default function BatchTransfer({ codes, onClose }: { codes: string[]; onC
             <X size={18} />
           </button>
         </div>
-        <p className="mt-1 text-sm text-ink-2">
-          Sur l’autre appareil, ouvrez /admin → Collecte → Activer la caméra, puis présentez chaque QR code. Les doublons sont ignorés automatiquement.
-        </p>
         <div className="mx-auto mt-4 max-w-[26rem] rounded-2xl bg-white p-3">
           <QrCode value={payload} size="100%" ecc="L" label={`Lot ${page + 1} sur ${pages.length}`} testId="batch-qr" />
         </div>
         <p className="mt-3 font-display text-2xl font-bold">
           Lot {page + 1} / {pages.length}
         </p>
-        <p className="text-sm text-ink-3">{pages[page]?.length ?? 0} réponses dans ce lot · {codes.length} au total</p>
+        <p className="text-sm text-ink-3">{pages[page]?.length ?? 0} / {codes.length}</p>
         <div className="mt-4 flex justify-center gap-2">
           <button type="button" className="btn btn-ghost" onClick={() => setPage((p) => (p - 1 + pages.length) % pages.length)} aria-label="Lot précédent">
             <ChevronLeft size={18} />
           </button>
-          <button type="button" className="btn btn-ghost" onClick={() => setAuto(!auto)}>
-            {auto ? <Pause size={18} /> : <Play size={18} />} {auto ? 'Pause' : 'Défilement auto'}
+          <button type="button" className="btn btn-ghost" onClick={() => setAuto(!auto)} aria-label={auto ? 'Pause' : 'Défilement automatique'}>
+            {auto ? <Pause size={18} /> : <Play size={18} />}
           </button>
           <button type="button" className="btn btn-ghost" onClick={() => setPage((p) => (p + 1) % pages.length)} aria-label="Lot suivant">
             <ChevronRight size={18} />

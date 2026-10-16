@@ -225,6 +225,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 'Q10',
+    tag: 'Estimation',
     short: 'Coût de l’attaque JLR',
     index: 10,
     category: 'international',
@@ -250,6 +251,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 'Q11',
+    tag: 'Estimation',
     short: 'Organisations touchées (JLR)',
     index: 11,
     category: 'international',
@@ -275,6 +277,7 @@ export const QUESTIONS: Question[] = [
   // ───────────── CATÉGORIE C — IA ─────────────
   {
     id: 'Q12',
+    tag: 'Chiffre éditeur',
     short: 'Espionnage exécuté par l’IA',
     index: 12,
     category: 'ia',
@@ -299,6 +302,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 'Q13',
+    tag: 'Chiffre éditeur',
     short: 'Project Glasswing',
     index: 13,
     category: 'ia',
@@ -323,6 +327,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 'Q14',
+    tag: 'Chiffre éditeur',
     short: 'Failles open source (Opus 4.6)',
     index: 14,
     category: 'ia',
@@ -347,6 +352,7 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 'Q15',
+    tag: 'Chiffre éditeur',
     short: 'Failles Firefox (Mozilla)',
     index: 15,
     category: 'ia',

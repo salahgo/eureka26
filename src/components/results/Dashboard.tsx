@@ -150,8 +150,6 @@ export default function Dashboard() {
     return () => window.removeEventListener('keydown', onKey);
   }, [p, act, step, toggleFullscreen]);
 
-  const hasAudienceData = submissions.length > 0 || ov.manualVotes > 0;
-
   return (
     <div className="flex h-dvh flex-col overflow-hidden px-[1.6rem] py-[1rem]" data-testid="dashboard" data-view={p.view} data-demo={p.demo ? 'true' : 'false'}>
       <header className="flex flex-wrap items-center gap-x-6 gap-y-3">
@@ -177,16 +175,16 @@ export default function Dashboard() {
           <DataBadge demo={p.demo} count={submissions.length} manual={ov.manualVotes} />
           {p.view === 'question' && (
             <>
-              <button type="button" className="btn btn-ghost" onClick={() => act({ revealed: !p.revealed })} data-testid="toggle-reveal" title="Révéler / masquer (Espace)">
-                {p.revealed ? <EyeOff size={18} /> : <Eye size={18} />} {p.revealed ? 'Masquer' : 'Révéler'}
+              <button type="button" className="btn btn-ghost" onClick={() => act({ revealed: !p.revealed })} data-testid="toggle-reveal" aria-label={p.revealed ? 'Masquer la réponse' : 'Révéler la réponse'} title="Espace">
+                {p.revealed ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
               <button type="button" className="btn btn-primary" onClick={() => act({ revealMode: true, revealed: true })} data-testid="reveal-mode" title="REVEAL plein écran (R)">
                 <Sparkles size={18} /> REVEAL
               </button>
             </>
           )}
-          <button type="button" className={`btn btn-ghost ${p.autoplay ? '!border-cyan-400/60 !text-cyan-200' : ''}`} onClick={() => act({ autoplay: !p.autoplay })} data-testid="autoplay" title="Diaporama automatique (A)">
-            {p.autoplay ? <Pause size={18} /> : <Play size={18} />} <span className="hidden xl:inline">Auto</span>
+          <button type="button" className={`btn btn-ghost ${p.autoplay ? '!border-cyan-400/60 !text-cyan-200' : ''}`} onClick={() => act({ autoplay: !p.autoplay })} data-testid="autoplay" aria-label="Diaporama automatique" title="A">
+            {p.autoplay ? <Pause size={18} /> : <Play size={18} />}
           </button>
           {fsSupported && (
             <button type="button" className="btn btn-ghost" onClick={toggleFullscreen} aria-label={isFullscreen ? 'Quitter le plein écran' : 'Plein écran'} data-testid="fullscreen" title="Plein écran (F)">
@@ -201,15 +199,15 @@ export default function Dashboard() {
 
       {p.demo && (
         <div className="mt-3 flex items-center justify-center gap-3 rounded-xl border-2 border-amber-400 bg-amber-400/15 px-4 py-2 text-center text-[1.15rem] font-bold uppercase tracking-[0.2em] text-amber-200" role="status" data-testid="demo-banner">
-          <FlaskConical size={22} aria-hidden="true" /> MODE DÉMONSTRATION — données fictives, exclues des résultats réels
-          <button type="button" className="ml-2 rounded-lg border border-amber-300/60 px-2 py-0.5 text-[0.85rem] normal-case tracking-normal" onClick={() => act({ demo: false })}>
-            Quitter (D)
+          <FlaskConical size={22} aria-hidden="true" /> MODE DÉMONSTRATION — données fictives
+          <button type="button" className="ml-2 rounded-lg border border-amber-300/60 p-1" onClick={() => act({ demo: false })} aria-label="Quitter le mode démonstration">
+            <X size={16} />
           </button>
         </div>
       )}
 
       <main className="relative mt-[1.1rem] min-h-0 flex-1 overflow-y-auto scrollbar-thin lg:overflow-hidden">
-        {p.view === 'overview' && <OverviewView ov={ov} perQuestion={perQuestion} sequenceLength={sequence.length} inviteUrl={invitationUrl(sequence, config.inviteUrl, config.phoneFeedback)} nonce={p.nonce} table={p.table} />}
+        {p.view === 'overview' && <OverviewView ov={ov} perQuestion={perQuestion} inviteUrl={invitationUrl(sequence, config.inviteUrl, config.phoneFeedback)} nonce={p.nonce} table={p.table} />}
         {p.view === 'question' &&
           (stats ? (
             <QuestionView stats={stats} position={pos} total={sequence.length} revealed={p.revealed} explanation={p.explanation} table={p.table} nonce={p.nonce} />
@@ -225,11 +223,11 @@ export default function Dashboard() {
             onClose={() => act({ spotlight: false })}
           />
         )}
-        {p.view === 'management' && <ManagementView topics={topics} hasData={hasAudienceData} />}
+        {p.view === 'management' && <ManagementView topics={topics} />}
         {p.view === 'future' && <FutureView />}
       </main>
 
-      <footer className="mt-[0.9rem] flex flex-wrap items-center gap-x-6 gap-y-2 text-[0.85rem] text-ink-3">
+      <footer className="mt-[0.9rem] flex min-h-[2.4rem] flex-wrap items-center gap-x-6 gap-y-2 text-[0.85rem] text-ink-3">
         {p.view === 'question' && (
           <div className="flex items-center gap-2">
             <button type="button" className="btn btn-ghost !min-h-[36px] !px-3 !py-1" onClick={() => step('prev')} disabled={pos === 0} aria-label="Question précédente" data-testid="prev">
@@ -243,14 +241,6 @@ export default function Dashboard() {
             </button>
           </div>
         )}
-        <p className="max-w-[70rem]">
-          <strong className="text-ink-2">Données du public</strong> : {p.demo ? 'fictives (démonstration)' : `${submissions.length} réponse(s) collectée(s) sur cet ordinateur (QR / import)${ov.manualVotes ? ` + ${ov.manualVotes} vote(s) manuel(s)` : ''}`}.{' '}
-          <strong className="text-ink-2">Chiffres de référence</strong> : sources publiques citées (ANCS, ENISA, CMC, Anthropic, NIST…).
-        </p>
-        <p className="ml-auto hidden items-center gap-1.5 lg:flex">
-          <span className="kbd">←</span>
-          <span className="kbd">→</span> naviguer · <span className="kbd">Espace</span> révéler · <span className="kbd">E</span> explication · <span className="kbd">R</span> REVEAL · <span className="kbd">?</span> aide
-        </p>
       </footer>
 
       {p.revealMode && p.view === 'question' && stats && <RevealOverlay stats={stats} nonce={p.nonce} onClose={() => act({ revealMode: false })} />}
@@ -313,9 +303,6 @@ function HelpOverlay({ onClose }: { onClose: () => void }) {
             </div>
           ))}
         </dl>
-        <p className="mt-4 text-sm text-ink-3">
-          Les commandes de /admin pilotent cet écran s’ils sont ouverts dans le même navigateur (BroadcastChannel). Les téléphones des participants ne sont pas synchronisés.
-        </p>
       </div>
     </div>
   );
