@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import InviteScreen from '../components/qr/InviteScreen.tsx';
+---
+
+<Base title="EUREKA26 — Scannez pour participer" description="Scannez le QR code et testez vos connaissances en cybersécurité, IA et management.">
+  <InviteScreen client:only="react">
+    <div slot="fallback" class="flex min-h-dvh items-center justify-center text-center">
+      <p class="font-display text-6xl font-bold">EUREKA<span class="text-cyan-300">26</span></p>
+    </div>
+  </InviteScreen>
+</Base>

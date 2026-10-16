@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import Dashboard from '../components/results/Dashboard.tsx';
+---
+
+<Base title="EUREKA26 — Résultats en direct" description="Tableau de bord de présentation EUREKA26 : réponses du public, vrais chiffres et enseignements pour les managers.">
+  <style is:global>
+    /* The whole dashboard scales with the projector: 1280 px → 14 px, 1920 px → ~17 px, 3840 px (4K) → ~34 px. */
+    html {
+      font-size: clamp(14px, 0.9vw, 40px);
+    }
+    @media (max-aspect-ratio: 4/3) and (min-width: 1024px) {
+      html {
+        font-size: clamp(14px, 1.6vh, 40px);
+      }
+    }
+  </style>
+  <Dashboard client:only="react">
+    <div slot="fallback" class="flex min-h-dvh items-center justify-center text-center">
+      <p class="font-display text-6xl font-bold">EUREKA<span class="text-cyan-300">26</span></p>
+    </div>
+  </Dashboard>
+</Base>

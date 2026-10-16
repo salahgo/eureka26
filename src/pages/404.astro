@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+---
+
+<Base title="EUREKA26 — Page introuvable" noindex>
+  <main class="mx-auto flex min-h-dvh max-w-xl flex-col items-center justify-center px-4 text-center">
+    <p class="font-display text-7xl font-bold text-cyan-300">404</p>
+    <h1 class="mt-3 font-display text-3xl font-bold">Cette page n’existe pas</h1>
+    <p class="mt-2 text-ink-2">Le lien est peut-être incomplet. Voici les pages de l’expérience EUREKA26 :</p>
+    <nav class="mt-6 flex flex-wrap justify-center gap-2" aria-label="Pages">
+      <a class="btn btn-primary" href={base}>Questionnaire</a>
+      <a class="btn btn-ghost" href={`${base}qr/`}>QR code</a>
+      <a class="btn btn-ghost" href={`${base}results/`}>Résultats</a>
+      <a class="btn btn-ghost" href={`${base}sources/`}>Sources</a>
+    </nav>
+  </main>
+</Base>
