@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import AdminApp from '../components/admin/AdminApp.tsx';
+---
+
+<Base title="EUREKA26 — Interface animateur" description="Interface locale de l'animateur : collecte des réponses, votes manuels, export et pilotage de l'écran de résultats." noindex>
+  <AdminApp client:only="react">
+    <div slot="fallback" class="flex min-h-dvh items-center justify-center text-center">
+      <p class="text-ink-2">Chargement de l’interface animateur…</p>
+    </div>
+  </AdminApp>
+</Base>

@@ -1,0 +1,130 @@
+---
+import Base from '../layouts/Base.astro';
+import { sourceList } from '../data/sources';
+import { glossaryList } from '../data/glossary';
+import { QUESTIONS } from '../data/questions';
+import { FACTS } from '../data/facts';
+import { fr } from '../lib/format';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const sources = sourceList();
+const usage = new Map<string, string[]>();
+for (const q of QUESTIONS) for (const s of q.sources) usage.set(s.id, [...(usage.get(s.id) ?? []), q.id]);
+for (const f of FACTS) if (!usage.has(f.sourceId)) usage.set(f.sourceId, ['chiffres chocs']);
+
+const kindLabel: Record<string, string> = { officiel: 'Source officielle', rapport: 'Rapport', éditeur: 'Publié par l’éditeur', presse: 'Presse', norme: 'Norme / référence' };
+const domainLabel: Record<string, string> = { cyber: 'Cybersécurité', management: 'Management & gouvernance', ia: 'Intelligence artificielle', institution: 'Institutions', crypto: 'Cryptographie' };
+const glossary = glossaryList();
+const domains = ['management', 'cyber', 'ia', 'crypto', 'institution'];
+
+const notes = [
+  "Chaque chiffre du questionnaire a été relu dans sa source primaire (page officielle, rapport PDF ou publication de l'éditeur) le 16 octobre 2026. Les URL sont citées ci-dessous.",
+  "ENISA : le brief initial mentionnait « 32 % des organisations ciblées ». Le rapport indique 31,8 % des incidents recensés pour l'administration publique : la question précise donc « près d'un tiers (31,8 %) ».",
+  "ANCS : la page du 1er semestre 2026 annonce 336 avis de sécurité dans le texte alors que le graphique mensuel en totalise 366. Ce chiffre n'est pas utilisé. La période exacte de la page « 2025 » n'étant pas précisée, aucune comparaison semestre / année n'est présentée.",
+  "Jaguar Land Rover : 1,9 Md£ et « plus de 5 000 organisations » sont des estimations d'impact économique du Cyber Monitoring Centre (modélisation par scénario), pas des pertes auditées ni 5 000 entreprises piratées.",
+  "Project Glasswing : « plus de 10 000 vulnérabilités élevées ou critiques » provient de la mise à jour d'Anthropic du 22 mai 2026 (un mois après le lancement). La mise à jour d'octobre 2026 mentionne au moins 129 000 vulnérabilités vérifiées, dont plus de 33 000 critiques ou élevées.",
+  "Les résultats sur l'IA (campagne d'espionnage, Claude Opus 4.6, Mozilla, Glasswing) sont publiés par l'éditeur du modèle, Anthropic, ou par ses partenaires : ils sont attribués comme tels et n'ont pas fait l'objet d'un audit indépendant.",
+  "Groupe CRIT : le groupe a confirmé la fuite (communiqué du 22 mai 2026). La revendication du groupe de rançongiciel « Titan » n'est pas vérifiée de façon indépendante.",
+  "Prospective : les questions sur 2030 distinguent ce qui existe aujourd'hui (normes post-quantiques publiées en 2024, agents IA déjà utilisés) des projections (calendrier proposé par le NIST dans le projet IR 8547, jalons du NCSC). Le schéma « management de demain » est un cadre pédagogique, pas une prévision statistique.",
+];
+---
+
+<Base title="EUREKA26 — Sources, méthodologie et glossaire" description="Sources primaires, méthodologie de vérification, fonctionnement sans serveur et glossaire des abréviations de l'expérience EUREKA26.">
+  <div class="mx-auto max-w-5xl px-4 pb-20 pt-6 md:px-6">
+    <header class="flex flex-wrap items-center justify-between gap-4">
+      <a href={base} class="flex items-center gap-3" aria-label="Retour au questionnaire">
+        <img src={`${base}favicon.svg`} alt="" width="36" height="36" />
+        <span class="font-display text-2xl font-bold">EUREKA<span class="text-cyan-300">26</span></span>
+      </a>
+      <nav class="flex flex-wrap gap-2 text-sm" aria-label="Navigation">
+        <a class="chip hover:text-ink" href="#methodologie">Méthodologie</a>
+        <a class="chip hover:text-ink" href="#collecte">Collecte sans serveur</a>
+        <a class="chip hover:text-ink" href="#sources">Sources</a>
+        <a class="chip hover:text-ink" href="#glossaire">Glossaire</a>
+      </nav>
+    </header>
+
+    <section class="mt-10">
+      <h1 class="font-display text-4xl font-bold tracking-tight md:text-5xl">Sources, méthodologie et glossaire</h1>
+      <p class="mt-3 max-w-3xl text-lg text-ink-2">{fr(`${QUESTIONS.length} questions, ${sources.length} sources citées, ${glossary.length} termes expliqués. Les chiffres présentés pendant la table ronde sont tous rattachés à une source publique vérifiable.`)}</p>
+      <p class="mt-4 rounded-2xl border border-amber-400/40 bg-amber-400/10 p-4 text-amber-100">⚠︎ Cette page révèle des réponses : consultez-la de préférence après avoir terminé le questionnaire.</p>
+    </section>
+
+    <section id="methodologie" class="mt-12 scroll-mt-6">
+      <h2 class="font-display text-3xl font-bold">Méthodologie de vérification</h2>
+      <ul class="mt-4 space-y-3">
+        {notes.map((n) => (
+          <li class="glass rounded-2xl p-4 leading-relaxed text-ink-2">{fr(n)}</li>
+        ))}
+      </ul>
+    </section>
+
+    <section id="collecte" class="mt-12 scroll-mt-6">
+      <h2 class="font-display text-3xl font-bold">Comment les réponses sont collectées sans serveur</h2>
+      <div class="mt-4 grid gap-4 md:grid-cols-2">
+        <div class="glass rounded-2xl p-5 leading-relaxed text-ink-2">
+          <h3 class="font-display text-xl font-bold text-ink">Côté participant</h3>
+          <ol class="mt-2 list-decimal space-y-1.5 pl-5">
+            <li>Le questionnaire s'exécute entièrement dans le navigateur du téléphone ; la progression est enregistrée localement (localStorage).</li>
+            <li>Aucun nom, e-mail ni donnée personnelle n'est demandé. Aucune requête réseau n'est envoyée avec les réponses, aucun outil d'analyse d'audience n'est utilisé.</li>
+            <li>À la fin, un QR code et un code texte (ex. <code class="font-mono text-cyan-200">E26-1C-…</code>) contiennent un identifiant aléatoire, l'état « complet / partiel » et les choix A/B/C/D, protégés par une somme de contrôle.</li>
+          </ol>
+        </div>
+        <div class="glass rounded-2xl p-5 leading-relaxed text-ink-2">
+          <h3 class="font-display text-xl font-bold text-ink">Côté animateur</h3>
+          <ol class="mt-2 list-decimal space-y-1.5 pl-5">
+            <li>L'animateur scanne les QR codes avec la caméra de l'ordinateur de présentation (/admin), importe des fichiers JSON, colle des codes ou saisit des votes manuels (étiquetés comme tels).</li>
+            <li>Les réponses sont agrégées dans ce seul navigateur ; les identifiants répétés sont détectés et ignorés.</li>
+            <li>/admin, /results et /qr ouverts dans le même navigateur se synchronisent (BroadcastChannel). Cette synchronisation ne s'étend pas aux autres appareils.</li>
+            <li>La session peut être exportée et restaurée (JSON) et les résultats exportés en CSV.</li>
+          </ol>
+        </div>
+      </div>
+      <p class="mt-4 text-sm text-ink-3">Hébergement : GitHub Pages (site 100 % statique). Pas de base de données, pas de serveur, pas de service tiers, pas de CDN externe : polices et bibliothèques sont intégrées au site lors de la compilation. Le mode démonstration de l'écran de résultats utilise des données fictives clairement signalées, jamais enregistrées ni exportées.</p>
+    </section>
+
+    <section id="sources" class="mt-12 scroll-mt-6">
+      <h2 class="font-display text-3xl font-bold">Sources</h2>
+      <ul class="mt-4 grid gap-3">
+        {sources.map((s) => (
+          <li class="glass rounded-2xl p-4" id={`src-${s.id}`}>
+            <div class="flex flex-wrap items-center gap-2 text-xs">
+              <span class="chip">{kindLabel[s.kind]}</span>
+              <span class="text-ink-3">Publié : {s.date} · vérifié le {s.verifiedOn}</span>
+              {usage.get(s.id) && <span class="text-ink-3">· utilisé pour : {usage.get(s.id)!.join(', ')}</span>}
+            </div>
+            <p class="mt-2 font-semibold text-ink">{s.publisher}</p>
+            <a class="mt-0.5 block break-words text-cyan-300 underline decoration-dotted underline-offset-4 hover:text-cyan-200" href={s.url} rel="noopener noreferrer" target="_blank">{fr(s.title)}</a>
+            {s.note && <p class="mt-2 text-sm leading-relaxed text-ink-2">{fr(s.note)}</p>}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section id="glossaire" class="mt-12 scroll-mt-6">
+      <h2 class="font-display text-3xl font-bold">Glossaire des abréviations</h2>
+      {domains.map((d) => (
+        <div class="mt-6">
+          <h3 class="text-sm font-semibold uppercase tracking-[0.18em] text-ink-3">{domainLabel[d]}</h3>
+          <dl class="mt-2 grid gap-3 md:grid-cols-2">
+            {glossary.filter((g) => g.domain === d).map((g) => (
+              <div class="glass rounded-2xl p-4" id={`term-${g.term.replace(/[^A-Za-z0-9]+/g, '-')}`}>
+                <dt>
+                  <span class="font-display text-xl font-bold text-ink">{g.term}</span>
+                  <span class="ml-2 text-sm text-cyan-200">{g.expansion}</span>
+                </dt>
+                <dd class="mt-1 text-sm leading-relaxed text-ink-2">{fr(g.definition)}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      ))}
+    </section>
+
+    <footer class="mt-14 flex flex-wrap gap-3 border-t border-edge pt-6 text-sm text-ink-3">
+      <a class="btn btn-primary" href={base}>Faire le questionnaire</a>
+      <a class="btn btn-ghost" href={`${base}results/`}>Écran de résultats</a>
+      <span class="ml-auto self-center">EUREKA26 · contenu vérifié le 16 octobre 2026</span>
+    </footer>
+  </div>
+</Base>
