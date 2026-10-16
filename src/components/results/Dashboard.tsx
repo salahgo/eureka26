@@ -14,13 +14,12 @@ import {
   Play,
   Rocket,
   Sparkles,
-  Briefcase,
   X,
   Zap,
 } from 'lucide-react';
 import { FACTS } from '../../data/facts';
 import { activeSequence, nextState, type DashboardView, type PresentationState } from '../../lib/config';
-import { overview, questionStats, topicStats } from '../../lib/aggregate';
+import { overview, questionStats } from '../../lib/aggregate';
 import { demoSubmissions } from '../../lib/demo';
 import { invitationUrl } from '../../lib/urls';
 import Brand from '../common/Brand';
@@ -28,7 +27,6 @@ import { useFullscreen, useInterval } from '../common/hooks';
 import { useConfig, usePresentation, useSession } from '../common/shared';
 import FactsView from './FactsView';
 import FutureView from './FutureView';
-import ManagementView from './ManagementView';
 import OverviewView from './OverviewView';
 import QuestionView from './QuestionView';
 import RevealOverlay from './RevealOverlay';
@@ -39,8 +37,7 @@ const VIEWS: { id: DashboardView; label: string; key: string; icon: typeof Layou
   { id: 'overview', label: 'Vue d’ensemble', key: '1', icon: LayoutGrid },
   { id: 'question', label: 'Questions', key: '2', icon: ListChecks },
   { id: 'facts', label: 'Chiffres chocs', key: '3', icon: Zap },
-  { id: 'management', label: 'Management', key: '4', icon: Briefcase },
-  { id: 'future', label: 'Futur', key: '5', icon: Rocket },
+  { id: 'future', label: 'Futur', key: '4', icon: Rocket },
 ];
 
 export default function Dashboard() {
@@ -56,7 +53,6 @@ export default function Dashboard() {
   const submissions = demo ?? session.submissions;
   const manual = demo ? NO_MANUAL : session.manual;
   const ov = useMemo(() => overview(sequence, submissions, manual), [sequence, submissions, manual]);
-  const topics = useMemo(() => topicStats(sequence, submissions, manual), [sequence, submissions, manual]);
   const perQuestion = useMemo(() => sequence.map((id) => questionStats(id, submissions, manual)), [sequence, submissions, manual]);
   const pos = Math.min(p.pos, Math.max(0, sequence.length - 1));
   const currentId = sequence[pos];
@@ -74,10 +70,10 @@ export default function Dashboard() {
           return { ...prev, pos: prev.pos + 1, revealed: false, explanation: false, nonce: prev.nonce + 1 };
         }
         if (prev.view === 'facts') {
-          if (prev.factIndex + 1 >= FACTS.length) return { ...prev, view: 'management', spotlight: false, nonce: prev.nonce + 1 };
+          if (prev.factIndex + 1 >= FACTS.length) return { ...prev, view: 'future', spotlight: false, nonce: prev.nonce + 1 };
           return { ...prev, factIndex: prev.factIndex + 1, spotlight: true, nonce: prev.nonce + 1 };
         }
-        const order: DashboardView[] = ['overview', 'question', 'facts', 'management', 'future'];
+        const order: DashboardView[] = ['overview', 'question', 'facts', 'future'];
         const next = order[(order.indexOf(prev.view) + 1) % order.length];
         return { ...prev, view: next, pos: next === 'question' ? 0 : prev.pos, revealed: false, nonce: prev.nonce + 1 };
       });
@@ -223,7 +219,6 @@ export default function Dashboard() {
             onClose={() => act({ spotlight: false })}
           />
         )}
-        {p.view === 'management' && <ManagementView topics={topics} />}
         {p.view === 'future' && <FutureView />}
       </main>
 
@@ -276,7 +271,7 @@ function HelpOverlay({ onClose }: { onClose: () => void }) {
     ['Espace / Entrée', 'Révéler ou masquer la réponse'],
     ['E', 'Afficher / masquer l’explication'],
     ['R', 'Mode REVEAL plein écran (ou chiffre en plein écran)'],
-    ['1 … 5', 'Vue d’ensemble · Questions · Chiffres chocs · Management · Futur'],
+    ['1 … 4', 'Vue d’ensemble · Questions · Chiffres chocs · Futur'],
     ['O / Début', 'Retour à la vue d’ensemble'],
     ['A', 'Diaporama automatique'],
     ['F', 'Plein écran'],

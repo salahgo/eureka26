@@ -17,7 +17,7 @@ for (const width of [360, 390, 430]) {
       await expect(page.getByTestId('question-title')).toHaveAttribute('data-question-id', DEFAULT_SEQUENCE[0]);
       await answerAll(page, correctOf, { checkOverflow: true });
 
-      await expect(page.getByTestId('score')).toContainText('16/16');
+      await expect(page.getByTestId('score')).toContainText('10/10');
       await expectNoHorizontalScroll(page);
       const codeText = await page.getByTestId('response-code').inputValue();
       const decoded = decodeResponse(codeText);
@@ -76,13 +76,13 @@ test.describe('questionnaire behaviour', () => {
   });
 
   test('a custom subset from the invitation URL (?s=) and no-feedback mode (?f=0)', async ({ page }) => {
-    await page.goto(`${BASE}?s=1AC&f=0`);
+    await page.goto(`${BASE}?s=13A&f=0`);
     await expect(page.getByTestId('quiz-meta')).toContainText('3 questions');
     await page.getByTestId('start').click();
     await answerAll(page, () => 0, { feedback: false });
     await expect(page.getByTestId('score')).toBeVisible();
     const decoded = decodeResponse(await page.getByTestId('response-code').inputValue());
-    expect(Object.keys(decoded.answers)).toEqual(['Q01', 'Q10', 'Q12']);
+    expect(Object.keys(decoded.answers)).toEqual(['Q01', 'Q03', 'Q10']);
   });
 
   test('participant JSON export contains the code and no personal data', async ({ page }) => {

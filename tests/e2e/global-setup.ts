@@ -4,7 +4,7 @@ import { FAKE_CAMERA } from '../../playwright.config';
 import { code, qrRaster } from './helpers';
 
 /** Code shown to the fake webcam in camera.spec.ts. */
-export const CAMERA_CODE = code('CAMERA01', { Q01: 2, Q21: 3, Q10: 2, Q12: 0 });
+export const CAMERA_CODE = code('CAMERA01', { Q01: 2, Q02: 2, Q03: 0, Q04: 2 });
 
 /**
  * Builds a Y4M video (the format Chromium's fake capture device reads) that shows a participant's

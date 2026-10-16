@@ -26,7 +26,7 @@ export const FACTS: Fact[] = [
     sourceId: 'ancs-s1-2026',
     period: 'S1 2026',
     tone: 'amber',
-    questionId: 'Q02',
+    questionId: 'Q07',
   },
   {
     id: 'F-incidents-tn',
@@ -37,7 +37,7 @@ export const FACTS: Fact[] = [
     sourceId: 'ancs-s1-2026',
     period: 'S1 2026',
     tone: 'cyan',
-    questionId: 'Q03',
+    questionId: 'Q04',
   },
   {
     id: 'F-jlr-cost',
@@ -51,7 +51,7 @@ export const FACTS: Fact[] = [
     sourceId: 'cmc-jlr-2025',
     period: '2025',
     tone: 'red',
-    questionId: 'Q10',
+    questionId: 'Q02',
   },
   {
     id: 'F-jlr-orgs',
@@ -63,7 +63,7 @@ export const FACTS: Fact[] = [
     sourceId: 'cmc-jlr-2025',
     period: '2025',
     tone: 'amber',
-    questionId: 'Q11',
+    questionId: 'Q08',
   },
   {
     id: 'F-glasswing',
@@ -75,7 +75,7 @@ export const FACTS: Fact[] = [
     sourceId: 'anthropic-glasswing-update-2026',
     period: 'Avril–mai 2026',
     tone: 'violet',
-    questionId: 'Q13',
+    questionId: 'Q10',
   },
   {
     id: 'F-glasswing-oct',
@@ -86,7 +86,7 @@ export const FACTS: Fact[] = [
     sourceId: 'anthropic-cvp-2026',
     period: 'Avril–juillet 2026',
     tone: 'violet',
-    questionId: 'Q13',
+    questionId: 'Q10',
   },
   {
     id: 'F-ai-espionage',
@@ -99,7 +99,7 @@ export const FACTS: Fact[] = [
     sourceId: 'anthropic-espionage-2025',
     period: 'Septembre 2025',
     tone: 'violet',
-    questionId: 'Q12',
+    questionId: 'Q03',
   },
   {
     id: 'F-opus-500',
@@ -111,7 +111,7 @@ export const FACTS: Fact[] = [
     sourceId: 'anthropic-zero-days-2026',
     period: 'Février 2026',
     tone: 'cyan',
-    questionId: 'Q14',
+    questionId: 'Q06',
   },
   {
     id: 'F-enisa-ddos',
@@ -124,7 +124,7 @@ export const FACTS: Fact[] = [
     sourceId: 'enisa-etl-2026',
     period: '2025',
     tone: 'cyan',
-    questionId: 'Q07',
+    questionId: 'Q05',
   },
   {
     id: 'F-enisa-ideology',
@@ -137,7 +137,6 @@ export const FACTS: Fact[] = [
     sourceId: 'enisa-etl-2026',
     period: '2025',
     tone: 'amber',
-    questionId: 'Q09',
   },
   {
     id: 'F-firefox',
@@ -148,7 +147,6 @@ export const FACTS: Fact[] = [
     sourceId: 'anthropic-mozilla-2026',
     period: 'Mars 2026',
     tone: 'cyan',
-    questionId: 'Q15',
   },
 ];
 

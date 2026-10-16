@@ -8,7 +8,6 @@ const VIEWS: { id: DashboardView; label: string }[] = [
   { id: 'overview', label: 'Vue d’ensemble' },
   { id: 'question', label: 'Questions' },
   { id: 'facts', label: 'Chiffres chocs' },
-  { id: 'management', label: 'Management' },
   { id: 'future', label: 'Futur' },
 ];
 

@@ -1,5 +1,4 @@
 import { QUESTION_BY_ID } from '../data/questions';
-import type { ManagementTopic } from '../data/types';
 import type { ManualCounts, Submission } from './session';
 
 export type Counts = [number, number, number, number];
@@ -108,45 +107,4 @@ export function overview(sequence: string[], submissions: Submission[], manual: 
     mostSurprising: numeric.find((s) => s.questionId !== byDifficulty[0]?.questionId) ?? numeric[0] ?? null,
     scoreHistogram: histogram,
   };
-}
-
-export interface TopicStats {
-  topic: ManagementTopic;
-  questionIds: string[];
-  respondents: number;
-  pctCorrect: number | null;
-}
-
-export const MANAGEMENT_TOPICS: ManagementTopic[] = [
-  'Gouvernance cyber',
-  'GRC',
-  'NIST CSF',
-  'RTO/RPO',
-  'SOC/SIEM/SOAR',
-  'IAM/PAM',
-  'Supervision des agents IA',
-  'Zero Trust',
-  'Souveraineté numérique',
-  'Post-quantique',
-];
-
-/**
- * Knowledge per management topic, computed only on the conceptual questions
- * (abbreviation / management categories + the AI-governance question), not on statistics trivia.
- */
-export function topicStats(sequence: string[], submissions: Submission[], manual: ManualCounts): TopicStats[] {
-  return MANAGEMENT_TOPICS.map((topic) => {
-    const ids = sequence.filter((id) => {
-      const q = QUESTION_BY_ID[id];
-      return q && q.managementTopics?.includes(topic) && (q.category === 'abreviations' || q.category === 'management' || q.id === 'Q26');
-    });
-    let respondents = 0;
-    let correct = 0;
-    for (const id of ids) {
-      const s = questionStats(id, submissions, manual);
-      respondents += s.respondents;
-      correct += s.correctVotes;
-    }
-    return { topic, questionIds: ids, respondents, pctCorrect: respondents ? correct / respondents : null };
-  });
 }

@@ -536,10 +536,7 @@ function QuestionsPanel({ config, setConfig }: { config: ReturnType<typeof defau
       >
         <div className="mb-3 flex flex-wrap gap-2">
           <button type="button" className="btn btn-ghost" onClick={() => setConfig((p) => ({ ...p, order: [...FULL_SEQUENCE], enabled: [...DEFAULT_SEQUENCE] }))} data-testid="preset-default">
-            Sélection par défaut (16)
-          </button>
-          <button type="button" className="btn btn-ghost" onClick={() => setConfig((p) => ({ ...p, enabled: [...p.order] }))} data-testid="preset-all">
-            Toutes les questions ({config.order.length})
+            Toutes ({DEFAULT_SEQUENCE.length})
           </button>
           <button type="button" className="btn btn-ghost" onClick={() => setConfig((p) => ({ ...p, enabled: [] }))}>
             Tout désactiver

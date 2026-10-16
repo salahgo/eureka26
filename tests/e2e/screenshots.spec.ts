@@ -86,9 +86,6 @@ test.describe('projection 1920×1080', () => {
     await shot(page, 'projection-8-chiffre-plein-ecran');
     await page.keyboard.press('Escape');
     await page.keyboard.press('4');
-    await page.waitForTimeout(1500);
-    await shot(page, 'projection-9-management-demo');
-    await page.keyboard.press('5');
     await page.waitForTimeout(1800);
     await shot(page, 'projection-10-futur');
     await page.keyboard.press('d');

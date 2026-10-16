@@ -15,12 +15,10 @@ for (const f of FACTS) if (!usage.has(f.sourceId)) usage.set(f.sourceId, ['chiff
 const kindLabel: Record<string, string> = { officiel: 'Source officielle', rapport: 'Rapport', éditeur: 'Publié par l’éditeur', presse: 'Presse', norme: 'Norme / référence' };
 const domainLabel: Record<string, string> = { cyber: 'Cybersécurité', management: 'Management & gouvernance', ia: 'Intelligence artificielle', institution: 'Institutions', crypto: 'Cryptographie' };
 const glossary = glossaryList();
-const domains = ['management', 'cyber', 'ia', 'crypto', 'institution'];
+const domains = ['cyber', 'ia', 'institution', 'management', 'crypto'].filter((d) => glossary.some((g) => g.domain === d));
 
 const notes = [
   "Chiffres vérifiés dans leurs sources primaires le 16 octobre 2026.",
-  "ENISA : administration publique = 31,8 % des incidents recensés (2025).",
-  "ANCS : le chiffre de 336 avis de sécurité (366 dans le graphique mensuel) n'est pas utilisé.",
   "Jaguar Land Rover : impact économique estimé par le CMC, pas des pertes auditées.",
   "IA : chiffres publiés par Anthropic ou ses partenaires, sans audit indépendant.",
   "Glasswing : +10 000 failles = mise à jour du 22 mai 2026 ; 129 000 vérifiées = mise à jour d'octobre 2026.",

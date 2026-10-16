@@ -4,42 +4,24 @@ import { SOURCES } from '../../src/data/sources';
 import { GLOSSARY } from '../../src/data/glossary';
 import { FACTS } from '../../src/data/facts';
 
-/** Reference answers from the brief (Q1–Q22) plus the complementary questions. */
+/** Verified answers for the 10 questions of the event. */
 const EXPECTED: Record<string, { letter: string; contains: string }> = {
   Q01: { letter: 'C', contains: '35 000' },
-  Q02: { letter: 'C', contains: '636 Gbit/s' },
-  Q03: { letter: 'C', contains: 'tunCERT' },
-  Q04: { letter: 'D', contains: '99,83 %' },
-  Q05: { letter: 'C', contains: 'Groupe CRIT' },
-  Q06: { letter: 'B', contains: '114' },
-  Q07: { letter: 'C', contains: '51 %' },
-  Q08: { letter: 'D', contains: 'Administration publique' },
-  Q09: { letter: 'C', contains: '57 %' },
-  Q10: { letter: 'C', contains: '1,9 milliard de livres' },
-  Q11: { letter: 'D', contains: 'Plus de 5 000' },
-  Q12: { letter: 'D', contains: '80–90 %' },
-  Q13: { letter: 'C', contains: 'Plus de 10 000' },
-  Q14: { letter: 'C', contains: 'Plus de 500' },
-  Q15: { letter: 'B', contains: '14' },
-  Q16: { letter: 'B', contains: 'Distributed Denial of Service' },
-  Q17: { letter: 'C', contains: 'Model Context Protocol' },
-  Q18: { letter: 'D', contains: 'SOAR' },
-  Q19: { letter: 'C', contains: 'RTO = délai de restauration visé ; RPO = perte de données maximale tolérée' },
-  Q20: { letter: 'C', contains: 'GOVERN' },
-  Q21: { letter: 'D', contains: 'La direction, avec le RSSI et les responsables métiers' },
-  Q22: { letter: 'D', contains: 'Zero Trust' },
-  Q23: { letter: 'C', contains: 'clés de chiffrement' },
-  Q24: { letter: 'B', contains: 'Ne jamais faire confiance par défaut' },
-  Q25: { letter: 'B', contains: 'comptes à privilèges' },
-  Q26: { letter: 'B', contains: 'permissions minimales' },
-  Q27: { letter: 'B', contains: 'authentification multifacteur' },
-  Q28: { letter: 'B', contains: 'Governance, Risk and Compliance' },
-  Q29: { letter: 'B', contains: 'déchiffrées demain' },
+  Q02: { letter: 'C', contains: '1,9 milliard de livres' },
+  Q03: { letter: 'D', contains: '80–90 %' },
+  Q04: { letter: 'C', contains: '657 540' },
+  Q05: { letter: 'C', contains: '51 %' },
+  Q06: { letter: 'C', contains: 'Plus de 500' },
+  Q07: { letter: 'C', contains: '636 Gbit/s' },
+  Q08: { letter: 'D', contains: 'Plus de 5 000' },
+  Q09: { letter: 'D', contains: '99,83 %' },
+  Q10: { letter: 'C', contains: 'Plus de 10 000' },
 };
 
 describe('question bank', () => {
-  it('contains at least 22 questions', () => {
-    expect(QUESTIONS.length).toBeGreaterThanOrEqual(22);
+  it('contains exactly 10 questions, all built around a figure', () => {
+    expect(QUESTIONS).toHaveLength(10);
+    for (const q of QUESTIONS) expect(q.numeric, q.id).toBeDefined();
   });
 
   it('has unique, contiguous, frozen indices matching ids', () => {
@@ -91,88 +73,51 @@ describe('question bank', () => {
     }
   });
 
-  it('forward-looking questions separate current facts from projections', () => {
-    for (const id of ['Q22', 'Q29']) {
-      const h = QUESTION_BY_ID[id].horizon!;
-      expect(h.now).toMatch(/^Aujourd'hui/);
-      expect(h.projection).toMatch(/^Projection/);
-    }
-  });
-
   it('JLR questions carry the "estimate, not audited losses" caveat', () => {
-    expect(QUESTION_BY_ID.Q10.caveat).toMatch(/estimé/);
-    expect(QUESTION_BY_ID.Q11.caveat).toMatch(/pas organisations compromises/);
+    expect(QUESTION_BY_ID.Q02.caveat).toMatch(/estimé/);
+    expect(QUESTION_BY_ID.Q08.caveat).toMatch(/pas organisations compromises/);
+    expect(QUESTION_BY_ID.Q02.tag).toBe('Estimation');
   });
 
   it('vendor-reported AI figures are attributed', () => {
-    for (const id of ['Q12', 'Q13', 'Q14', 'Q15']) {
+    for (const id of ['Q03', 'Q06', 'Q10']) {
       expect(QUESTION_BY_ID[id].caveat, id).toMatch(/éditeur|Anthropic/);
+      expect(QUESTION_BY_ID[id].tag, id).toBe('Chiffre éditeur');
     }
   });
 });
 
 describe('sequences', () => {
-  it('default sequence has 16 unique existing questions', () => {
-    expect(DEFAULT_SEQUENCE).toHaveLength(16);
-    expect(new Set(DEFAULT_SEQUENCE).size).toBe(16);
-    DEFAULT_SEQUENCE.forEach((id) => expect(QUESTION_BY_ID[id]).toBeDefined());
+  it('default sequence contains the 10 questions once', () => {
+    expect(DEFAULT_SEQUENCE).toHaveLength(10);
+    expect([...DEFAULT_SEQUENCE].sort()).toEqual(QUESTIONS.map((q) => q.id).sort());
+    expect(FULL_SEQUENCE).toEqual(DEFAULT_SEQUENCE);
   });
 
-  it('full sequence contains every question exactly once', () => {
-    expect([...FULL_SEQUENCE].sort()).toEqual(QUESTIONS.map((q) => q.id).sort());
-  });
-
-  it('opens with a shocking Tunisian statistic and follows the pacing pattern', () => {
+  it('opens with a Tunisian statistic and alternates Tunisia → international → AI', () => {
     const beats = DEFAULT_SEQUENCE.map((id) => QUESTION_BY_ID[id].beat);
-    expect(beats[0]).toBe('stat-tunisie');
-    expect(beats.slice(0, 6)).toEqual(['stat-tunisie', 'management', 'attaque-internationale', 'ia', 'geopolitique', 'stat-tunisie']);
-  });
-
-  it.each([
-    ['default', DEFAULT_SEQUENCE],
-    ['full', FULL_SEQUENCE],
-  ])('%s sequence never chains more than 2 abbreviation questions', (_n, seq) => {
-    let run = 0;
-    for (const id of seq) {
-      run = QUESTION_BY_ID[id].category === 'abreviations' ? run + 1 : 0;
-      expect(run).toBeLessThanOrEqual(2);
-    }
-  });
-
-  it('never repeats the same beat twice in a row in the default sequence', () => {
-    for (let i = 1; i < DEFAULT_SEQUENCE.length; i++) {
-      expect(QUESTION_BY_ID[DEFAULT_SEQUENCE[i]].beat).not.toBe(QUESTION_BY_ID[DEFAULT_SEQUENCE[i - 1]].beat);
-    }
+    expect(beats.slice(0, 3)).toEqual(['stat-tunisie', 'attaque-internationale', 'ia']);
+    for (let i = 1; i < beats.length; i++) expect(beats[i]).not.toBe(beats[i - 1]);
   });
 });
 
 describe('glossary', () => {
   const required: Record<string, string> = {
     DDoS: 'Distributed Denial of Service',
-    MCP: 'Model Context Protocol',
-    SOAR: 'Security Orchestration, Automation and Response',
-    SIEM: 'Security Information and Event Management',
-    SOC: 'Security Operations Center',
-    RTO: 'Recovery Time Objective',
-    RPO: 'Recovery Point Objective',
-    GRC: 'Governance, Risk and Compliance',
-    RSSI: "Responsable de la sécurité des systèmes d'information",
-    IAM: 'Identity and Access Management',
-    PAM: 'Privileged Access Management',
-    'ML-KEM': 'Module-Lattice-Based Key-Encapsulation Mechanism',
-    'ML-DSA': 'Module-Lattice-Based Digital Signature Algorithm',
-    'NIST CSF': 'NIST Cybersecurity Framework 2.0',
+    CVE: 'Common Vulnerabilities and Exposures',
+    SBOM: 'Software Bill of Materials',
+    LLM: 'Large Language Model',
+    ANCS: 'Agence nationale de la cybersécurité',
+    ENISA: 'European Union Agency for Cybersecurity',
   };
   it.each(Object.entries(required))('%s expands to the official term', (key, expansion) => {
     expect(GLOSSARY[key].expansion).toBe(expansion);
   });
 
-  it('NIST CSF lists the six functions', () => {
-    expect(GLOSSARY['NIST CSF'].definition).toMatch(/Govern, Identify, Protect, Detect, Respond, Recover/);
-  });
-
-  it('every entry is documented', () => {
-    for (const g of Object.values(GLOSSARY)) {
+  it('every entry is documented and used by a question', () => {
+    const used = new Set(QUESTIONS.flatMap((q) => q.abbreviations));
+    for (const [key, g] of Object.entries(GLOSSARY)) {
+      expect(used.has(key), key).toBe(true);
       expect(g.expansion.length).toBeGreaterThan(2);
       expect(g.definition.length).toBeGreaterThan(20);
     }
