@@ -91,7 +91,7 @@ export function AnswerBars({ stats, revealed, compact = false }: { stats: Questi
                   {emph ? <Check size={22} aria-label="Bonne réponse" /> : LETTERS[i]}
                 </span>
                 <span className={`flex-1 ${compact ? 'text-[1.1rem]' : 'text-[1.35rem]'} font-medium leading-snug`}>{fr(choice)}</span>
-                {emph && <span className="hidden rounded-full bg-emerald-400/20 px-3 py-1 text-[0.85rem] font-bold uppercase tracking-wider text-emerald-200 md:inline">Bonne réponse</span>}
+                {emph && <span className="sr-only">Bonne réponse</span>}
                 <span className="w-[6.5rem] shrink-0 text-right font-display tabular-nums">
                   <span className="text-[1.5rem] font-bold">{formatPct(stats.respondents ? pct : null)}</span>
                   <span className="block text-[0.85rem] text-ink-3">{total} vote{total > 1 ? 's' : ''}</span>
@@ -113,7 +113,7 @@ export function AnswerBars({ stats, revealed, compact = false }: { stats: Questi
       {hasManual && (
         <div className="mt-3 flex flex-wrap items-center gap-4 text-[0.9rem] text-ink-2" data-testid="bars-legend">
           <span className="inline-flex items-center gap-2">
-            <span className="h-3 w-5 rounded-sm" style={{ background: revealed ? 'var(--color-good)' : 'var(--color-series-1)' }} /> Réponses collectées (QR / import)
+            <span className="h-3 w-5 rounded-sm" style={{ background: revealed ? 'var(--color-good)' : 'var(--color-series-1)' }} /> Réponses collectées
           </span>
           <span className="inline-flex items-center gap-2">
             <span className="h-3 w-5 rounded-sm" style={{ background: revealed ? 'rgb(16 185 129 / 0.5)' : 'var(--color-series-2)' }} /> Votes collectés manuellement
@@ -157,17 +157,14 @@ export function VotesTable({ stats }: { stats: QuestionStats }) {
 
 export function HiddenAnswer() {
   return (
-    <div className="flex h-full flex-col items-center justify-center rounded-3xl border border-dashed border-cyan-400/30 bg-cyan-400/[0.03] p-8 text-center">
+    <div className="flex h-full flex-col items-center justify-center rounded-3xl border border-dashed border-cyan-400/30 bg-cyan-400/[0.03] p-8 text-center" aria-label="Réponse masquée">
       <div className="relative">
         <span className="absolute inset-0 rounded-full bg-cyan-400/30 animate-pulse-ring" aria-hidden="true" />
-        <span className="relative flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full bg-cyan-400/15 text-cyan-200">
-          <Lock size={34} aria-hidden="true" />
+        <span className="relative flex h-[6rem] w-[6rem] items-center justify-center rounded-full bg-cyan-400/15 text-cyan-200">
+          <Lock size={44} aria-hidden="true" />
         </span>
       </div>
-      <p className="mt-5 font-display text-[1.8rem] font-bold">Le vrai chiffre est masqué</p>
-      <p className="mt-2 text-[1.05rem] text-ink-2">
-        Appuyez sur <span className="kbd">Espace</span> pour révéler ou <span className="kbd">R</span> pour la révélation plein écran.
-      </p>
+      <span className="kbd mt-6 !text-[1rem]">Espace</span>
     </div>
   );
 }

@@ -50,7 +50,7 @@ export function isDefaultSequence(ids: string[]): boolean {
   return ids.length === DEFAULT_SEQUENCE.length && ids.every((id, i) => id === DEFAULT_SEQUENCE[i]);
 }
 
-export type DashboardView = 'overview' | 'question' | 'facts' | 'management' | 'future';
+export type DashboardView = 'overview' | 'question' | 'facts' | 'future';
 
 export interface PresentationState {
   view: DashboardView;
@@ -86,7 +86,7 @@ export const defaultPresentation = (): PresentationState => ({
 export function normalizePresentation(raw: Partial<PresentationState> | null | undefined): PresentationState {
   const d = defaultPresentation();
   if (!raw || typeof raw !== 'object') return d;
-  const views: DashboardView[] = ['overview', 'question', 'facts', 'management', 'future'];
+  const views: DashboardView[] = ['overview', 'question', 'facts', 'future'];
   return {
     view: views.includes(raw.view as DashboardView) ? (raw.view as DashboardView) : d.view,
     pos: Number.isInteger(raw.pos) && (raw.pos as number) >= 0 ? (raw.pos as number) : 0,
@@ -111,7 +111,7 @@ export function nextState(p: PresentationState, cmd: 'next' | 'prev', sequenceLe
     return { pos, revealed: false, explanation: false, revealMode: false };
   }
   if (p.view === 'facts') return { factIndex: (p.factIndex + d + FACTS.length) % FACTS.length };
-  const order: DashboardView[] = ['overview', 'question', 'facts', 'management', 'future'];
+  const order: DashboardView[] = ['overview', 'question', 'facts', 'future'];
   const i = order.indexOf(p.view) + d;
   return i >= 0 && i < order.length ? { view: order[i] } : {};
 }

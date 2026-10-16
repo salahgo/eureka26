@@ -5,9 +5,9 @@ import { BASE, collectErrors } from './helpers';
 const ROUTES = [
   { path: '', heading: /EUREKA/, title: /EUREKA26/ },
   { path: 'qr/', heading: /35\s?000 cyberattaques DDoS/, title: /Scannez/ },
-  { path: 'results/', heading: /Aucune réponse du public/, title: /Résultats/ },
+  { path: 'results/', heading: /En attente des réponses/, title: /Résultats/ },
   { path: 'sources/', heading: /Sources, méthodologie et glossaire/, title: /Sources/ },
-  { path: 'admin/', heading: /Scanner les QR codes de réponse/, title: /animateur/ },
+  { path: 'admin/', heading: /Scanner/, title: /animateur/ },
 ];
 
 test.describe('static routes', () => {

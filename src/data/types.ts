@@ -1,26 +1,7 @@
-export type CategoryId = 'tunisie' | 'international' | 'ia' | 'abreviations' | 'management';
+export type CategoryId = 'tunisie' | 'international' | 'ia';
 
-/** Pacing tag used to build an alternating, non-academic question sequence. */
-export type Beat =
-  | 'stat-tunisie'
-  | 'management'
-  | 'attaque-internationale'
-  | 'ia'
-  | 'geopolitique'
-  | 'abreviation';
-
-/** Management-knowledge topics visualised in section D of the dashboard. */
-export type ManagementTopic =
-  | 'GRC'
-  | 'NIST CSF'
-  | 'RTO/RPO'
-  | 'SOC/SIEM/SOAR'
-  | 'IAM/PAM'
-  | 'Gouvernance cyber'
-  | 'Supervision des agents IA'
-  | 'Zero Trust'
-  | 'Souveraineté numérique'
-  | 'Post-quantique';
+/** Pacing tag used to alternate Tunisia, international attacks and AI. */
+export type Beat = 'stat-tunisie' | 'attaque-internationale' | 'ia';
 
 export type ChoiceIndex = 0 | 1 | 2 | 3;
 
@@ -66,9 +47,10 @@ export interface Question {
   /** Keys into GLOSSARY (src/data/glossary.ts). */
   abbreviations: string[];
   managementInsight: string;
-  managementTopics?: ManagementTopic[];
   /** Methodological caveat shown with the answer (estimates, vendor-reported figures…). */
   caveat?: string;
+  /** One- or two-word label of that caveat, displayed on the dashboard. */
+  tag?: string;
   /** Distinguishes a current fact from a forward-looking projection. */
   horizon?: { now: string; projection: string };
   /** 1–5: how counter-intuitive the fact is (used to pick the "most surprising fact"). */

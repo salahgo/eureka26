@@ -10,7 +10,7 @@ import {
   removeSubmission,
   setManualCounts,
 } from '../../src/lib/session';
-import { overview, questionStats, topicStats, median, scoreOf } from '../../src/lib/aggregate';
+import { overview, questionStats, median, scoreOf } from '../../src/lib/aggregate';
 import { aggregatedCSV, submissionsCSV, toCSV } from '../../src/lib/exporters';
 import { demoSubmissions } from '../../src/lib/demo';
 import { DEFAULT_SEQUENCE, QUESTION_BY_ID } from '../../src/data/questions';
@@ -117,9 +117,9 @@ describe('session import / export', () => {
 describe('aggregation', () => {
   const subs = () => {
     let s = emptySession();
-    s = ingestCode(s, code('AAAAAAAA', { Q01: 2, Q21: 3 }), 'camera').session; // 2/2
-    s = ingestCode(s, code('BBBBBBBB', { Q01: 0, Q21: 3 }), 'camera').session; // 1/2
-    s = ingestCode(s, code('CCCCCCCC', { Q01: 1, Q21: 0 }, false), 'camera').session; // 0/2
+    s = ingestCode(s, code('AAAAAAAA', { Q01: 2, Q03: 3 }), 'camera').session; // 2/2
+    s = ingestCode(s, code('BBBBBBBB', { Q01: 0, Q03: 3 }), 'camera').session; // 1/2
+    s = ingestCode(s, code('CCCCCCCC', { Q01: 1, Q03: 0 }, false), 'camera').session; // 0/2
     return s;
   };
 
@@ -142,7 +142,7 @@ describe('aggregation', () => {
 
   it('computes overview figures', () => {
     const s = subs();
-    const o = overview(['Q01', 'Q21'], s.submissions, s.manual);
+    const o = overview(['Q01', 'Q03'], s.submissions, s.manual);
     expect(o.submissions).toBe(3);
     expect(o.completed).toBe(2);
     expect(o.averageScore).toBeCloseTo(0.5);
@@ -150,7 +150,8 @@ describe('aggregation', () => {
     expect(o.averageCorrect).toBeCloseTo(1);
     expect(o.pctCorrect).toBeCloseTo(3 / 6);
     expect(o.hardest?.questionId).toBe('Q01');
-    expect(o.mostSurprising?.questionId).toBe('Q01');
+    // the most surprising figure is a different question than the hardest one when possible
+    expect(o.mostSurprising?.questionId).toBe('Q03');
     expect(o.scoreHistogram.reduce((a, b) => a + b, 0)).toBe(3);
     expect(o.scoreHistogram[10]).toBe(1);
   });
@@ -172,14 +173,6 @@ describe('aggregation', () => {
   it('scores a submission', () => {
     const s = subs();
     expect(scoreOf(s.submissions[0])).toEqual({ correct: 2, answered: 2, rate: 1 });
-  });
-
-  it('computes management topic knowledge only from conceptual questions', () => {
-    const s = subs();
-    const topics = topicStats(['Q01', 'Q21'], s.submissions, s.manual);
-    const gov = topics.find((t) => t.topic === 'Gouvernance cyber')!;
-    expect(gov.questionIds).toEqual(['Q21']);
-    expect(gov.pctCorrect).toBeCloseTo(2 / 3);
   });
 });
 
@@ -228,7 +221,7 @@ describe('config & URLs', () => {
   it('invitation URL is the public URL by default and carries custom subsets', () => {
     expect(invitationUrl(DEFAULT_SEQUENCE)).toBe(PUBLIC_URL);
     expect(PUBLIC_URL).toMatch(/^https:\/\//);
-    const url = invitationUrl(['Q01', 'Q10', 'Q12']);
-    expect(new URL(url).searchParams.get('s')).toBe('1AC');
+    const url = invitationUrl(['Q01', 'Q05', 'Q10']);
+    expect(new URL(url).searchParams.get('s')).toBe('15A');
   });
 });

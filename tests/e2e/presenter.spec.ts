@@ -9,8 +9,8 @@ async function paste(admin: Page, text: string) {
   await admin.getByTestId('paste-submit').click();
 }
 
-const A = code('AAAAAAAA', { Q01: 2, Q21: 3, Q10: 0 }); // 2 correct (Q01, Q21)
-const B = code('BBBBBBBB', { Q01: 0, Q21: 3, Q10: 2 }); // 2 correct (Q21, Q10)
+const A = code('AAAAAAAA', { Q01: 2, Q03: 3, Q02: 0 }); // 2 correct (Q01, Q03)
+const B = code('BBBBBBBB', { Q01: 0, Q03: 3, Q02: 2 }); // 2 correct (Q03, Q02)
 const C = code('CCCCCCCC', { Q01: 2 }, false); // partial, 1 correct
 
 test.describe('presenter collection & aggregation', () => {
@@ -23,6 +23,7 @@ test.describe('presenter collection & aggregation', () => {
     await answerAll(p, correctOf);
     const participantCode = await p.getByTestId('response-code').inputValue();
     await phone.close();
+    expect(participantCode).toMatch(/^E26-1C-/);
 
     // 2. Presenter computer: /admin and /results open side by side in the same browser profile.
     const presenter = await browser.newContext({ viewport: { width: 1600, height: 1000 } });
@@ -40,6 +41,7 @@ test.describe('presenter collection & aggregation', () => {
     // Results page updates live without reload (BroadcastChannel).
     await expect(results.getByTestId('kpi-submissions')).toContainText('1');
     await expect(results.getByTestId('data-badge')).toContainText('1 réponse collectée');
+    await expect(results.getByTestId('kpi-completed')).toContainText('1');
     await expect(results.getByTestId('kpi-average')).toContainText('100');
 
     // Duplicate scan of the same code is detected and ignored.
@@ -191,7 +193,7 @@ test.describe('presentation dashboard', () => {
     await openDashboard(page);
     await page.keyboard.press('2');
     await expect(page.getByTestId('question-view')).toHaveAttribute('data-question', 'Q01');
-    await expect(page.getByTestId('no-votes')).toBeVisible();
+    await expect(page.getByTestId('bar-C')).toHaveAttribute('data-votes', '0');
     await page.keyboard.press('Space');
     await expect(page.getByTestId('bar-C')).toHaveAttribute('data-correct', 'true');
     await page.keyboard.press('e');
@@ -211,17 +213,15 @@ test.describe('presentation dashboard', () => {
     await expect(page.getByTestId('facts-view')).toBeVisible();
     await page.getByTestId('fact-F-jlr-cost').click();
     await expect(page.getByTestId('fact-spotlight')).toContainText('Jaguar Land Rover');
+    await expect(page.getByTestId('fact-spotlight')).toContainText('Cyber Monitoring Centre');
     await page.keyboard.press('ArrowRight');
     await expect(page.getByTestId('fact-spotlight')).toContainText('5 000');
     await page.keyboard.press('Escape');
     await expect(page.getByTestId('fact-spotlight')).toHaveCount(0);
 
     await page.keyboard.press('4');
-    await expect(page.getByTestId('management-view')).toContainText('Zero Trust');
-    await expect(page.getByTestId('management-view')).toContainText('Souveraineté numérique');
-    await page.keyboard.press('5');
     await expect(page.getByTestId('future-view')).toContainText('Management IA-conscient, sécurisé et résilient');
-    await expect(page.getByTestId('future-view')).toContainText('pas une prévision statistique');
+    await expect(page.getByTestId('future-view')).toContainText('pas une prévision');
     await page.keyboard.press('o');
     await expect(page.getByTestId('dashboard')).toHaveAttribute('data-view', 'overview');
   });
@@ -271,7 +271,7 @@ test.describe('invitation QR', () => {
 
   test('custom selection and no-feedback mode are carried by the invitation URL', async ({ page }) => {
     await page.goto(`${BASE}admin/#questions`);
-    await page.getByTestId('preset-all').click();
+    await page.getByTestId('enable-Q05').uncheck();
     await page.getByTestId('phone-feedback').uncheck();
     await expect(page.getByTestId('invite-preview')).toContainText('?s=');
     const qr = await page.context().newPage();
@@ -282,12 +282,12 @@ test.describe('invitation QR', () => {
     expect(url.startsWith(PROD_URL)).toBe(true);
     const params = new URL(url).searchParams;
     expect(params.get('f')).toBe('0');
-    expect(params.get('s')).toHaveLength(29);
-    // The participant opening that URL gets all 29 questions.
+    expect(params.get('s')).toBe('12346789A');
+    // The participant opening that URL gets the 9 selected questions.
     const phone = await page.context().browser()!.newContext({ viewport: { width: 390, height: 844 } });
     const p = await phone.newPage();
     await p.goto(`${BASE}?${params.toString()}`);
-    await expect(p.getByText('29', { exact: true })).toBeVisible();
+    await expect(p.getByTestId('quiz-meta')).toContainText('9 questions');
     await phone.close();
   });
 });

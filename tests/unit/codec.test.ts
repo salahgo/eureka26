@@ -35,16 +35,16 @@ describe('response codes', () => {
   });
 
   it('round-trips a partial response and keeps unanswered questions absent', () => {
-    const code = encodeResponse({ id: '00000000', answers: { Q01: 2, Q29: 1 }, complete: false });
+    const code = encodeResponse({ id: '00000000', answers: { Q01: 2, Q10: 1 }, complete: false });
     const d = decodeResponse(code);
     expect(d.complete).toBe(false);
-    expect(d.answers).toEqual({ Q01: 2, Q29: 1 });
+    expect(d.answers).toEqual({ Q01: 2, Q10: 1 });
   });
 
   it('is short and uses only the QR alphanumeric charset', () => {
     const code = encodeResponse({ id: randomId(), answers: allAnswers(5), complete: true });
     expect(code).toMatch(QR_ALNUM);
-    expect(code.length).toBeLessThanOrEqual(40);
+    expect(code.length).toBeLessThanOrEqual(30);
   });
 
   it('accepts lowercase and surrounding whitespace', () => {
@@ -83,8 +83,10 @@ describe('response codes', () => {
 
   it('packs and unpacks base-5 digits losslessly', () => {
     for (let t = 0; t < 50; t++) {
-      const digits = Array.from({ length: 29 }, (_, i) => (i * 7 + t * 13) % 5);
-      expect(unpackDigits(packDigits(digits), 29)).toEqual(digits);
+      for (const n of [10, 29]) {
+        const digits = Array.from({ length: n }, (_, i) => (i * 7 + t * 13) % 5);
+        expect(unpackDigits(packDigits(digits), n)).toEqual(digits);
+      }
     }
   });
 
